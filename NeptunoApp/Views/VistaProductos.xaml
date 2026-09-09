@@ -1,0 +1,180 @@
+﻿<UserControl x:Class="NeptunoApp.Views.VistaProductos"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#F4F6F9">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Encabezado -->
+        <Border Grid.Row="0" Background="White" CornerRadius="10" Padding="20" Margin="0,0,0,20">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1"/>
+            </Border.Effect>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Gestión de Productos" FontSize="24" FontWeight="Bold" Foreground="#2C3E50" VerticalAlignment="Center"/>
+                <Button Grid.Column="1" Content=" Nuevo Producto" Background="#3498DB" Foreground="White" 
+                        Padding="15,10" FontSize="14" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
+                        Command="{Binding LimpiarCommand}">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- Tabla de Datos -->
+        <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="10" Margin="0,0,0,20">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1"/>
+            </Border.Effect>
+            <DataGrid x:Name="dgProductos" ItemsSource="{Binding Productos}" 
+                      SelectedItem="{Binding ProductoSeleccionado}"
+                      AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                      RowHeight="40" GridLinesVisibility="Horizontal" BorderThickness="0"
+                      HeadersVisibility="Column">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#ECF0F1"/>
+                        <Setter Property="Foreground" Value="#2C3E50"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="Padding" Value="10"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding ProductoID}" Width="60"/>
+                    <DataGridTextColumn Header="Producto" Binding="{Binding NombreProducto}" Width="200"/>
+                    <DataGridTextColumn Header="Categoría" Binding="{Binding NombreCategoria}" Width="150"/>
+                    <DataGridTextColumn Header="Proveedor" Binding="{Binding CompaniaNombre}" Width="180"/>
+                    <DataGridTextColumn Header="Precio" Binding="{Binding PrecioUnidad, StringFormat={}{0:C2}}" Width="100"/>
+                    <DataGridTextColumn Header="Stock" Binding="{Binding UnidadesEnExistencia}" Width="80"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Formulario de Edición COMPLETO -->
+        <Border Grid.Row="2" Background="White" CornerRadius="10" Padding="20">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.1"/>
+            </Border.Effect>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Fila 1: Nombre, Categoría, Proveedor -->
+                <Grid Grid.Row="0" Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                        <TextBlock Text="Nombre del Producto" FontWeight="Bold" Margin="0,0,0,5" Foreground="#7F8C8D"/>
+                        <TextBox Text="{Binding ProductoSeleccionado.NombreProducto, UpdateSourceTrigger=PropertyChanged}" 
+                                 Padding="10" FontSize="14" BorderBrush="#BDC3C7" BorderThickness="1"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="5,0">
+                        <TextBlock Text="Categoría" FontWeight="Bold" Margin="0,0,0,5" Foreground="#7F8C8D"/>
+                        <ComboBox ItemsSource="{Binding Categorias}" 
+                                  SelectedValue="{Binding ProductoSeleccionado.CategoriaID, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValuePath="CategoriaID"
+                                  DisplayMemberPath="NombreCategoria"
+                                  Padding="10" FontSize="14" BorderBrush="#BDC3C7" BorderThickness="1"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Margin="10,0,0,0">
+                        <TextBlock Text="Proveedor" FontWeight="Bold" Margin="0,0,0,5" Foreground="#7F8C8D"/>
+                        <ComboBox ItemsSource="{Binding Proveedores}" 
+                                  SelectedValue="{Binding ProductoSeleccionado.ProveedorID, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValuePath="ProveedorID"
+                                  DisplayMemberPath="CompaniaNombre"
+                                  Padding="10" FontSize="14" BorderBrush="#BDC3C7" BorderThickness="1"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Fila 2: Cantidad, Precio, Stock (CON LostFocus PARA EVITAR ERRORES AL ESCRIBIR DECIMALES) -->
+                <Grid Grid.Row="1" Margin="0,0,0,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                        <TextBlock Text="Cantidad por Unidad" FontWeight="Bold" Margin="0,0,0,5" Foreground="#7F8C8D"/>
+                        <TextBox Text="{Binding ProductoSeleccionado.CantidadPorUnidad, UpdateSourceTrigger=LostFocus}" 
+                                 Padding="10" FontSize="14" BorderBrush="#BDC3C7" BorderThickness="1"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Margin="5,0">
+                        <TextBlock Text="Precio Unidad" FontWeight="Bold" Margin="0,0,0,5" Foreground="#7F8C8D"/>
+                        <TextBox Text="{Binding ProductoSeleccionado.PrecioUnidad, UpdateSourceTrigger=LostFocus}" 
+                                 Padding="10" FontSize="14" BorderBrush="#BDC3C7" BorderThickness="1"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Margin="5,0">
+                        <TextBlock Text="Stock Existente" FontWeight="Bold" Margin="0,0,0,5" Foreground="#7F8C8D"/>
+                        <TextBox Text="{Binding ProductoSeleccionado.UnidadesEnExistencia, UpdateSourceTrigger=LostFocus}" 
+                                 Padding="10" FontSize="14" BorderBrush="#BDC3C7" BorderThickness="1"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" Margin="5,0,0,0">
+                        <TextBlock Text="Nivel de Reorden" FontWeight="Bold" Margin="0,0,0,5" Foreground="#7F8C8D"/>
+                        <TextBox Text="{Binding ProductoSeleccionado.NivelDeReorden, UpdateSourceTrigger=LostFocus}" 
+                                 Padding="10" FontSize="14" BorderBrush="#BDC3C7" BorderThickness="1"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Fila 3: Botones -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <CheckBox Content="Descontinuado" 
+                                  IsChecked="{Binding ProductoSeleccionado.Descontinuado}" 
+                                  FontSize="14" VerticalAlignment="Center" Margin="0,0,20,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="💾 Guardar" Background="#2ECC71" Foreground="White" 
+                                Padding="20,12" FontSize="14" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
+                                Command="{Binding GuardarCommand}" Margin="0,0,10,0">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                        <Button Content="🗑️ Eliminar" Background="#E74C3C" Foreground="White" 
+                                Padding="20,12" FontSize="14" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
+                                Command="{Binding EliminarCommand}">
+                            <Button.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="8"/>
+                                </Style>
+                            </Button.Resources>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="NeptunoApp.Views.VistaProveedores"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#F4F6F9">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="White" CornerRadius="10" Padding="20" Margin="0,0,0,20">
+            <TextBlock Text="Gestión de Proveedores" FontSize="24" FontWeight="Bold" Foreground="#2C3E50"/>
+        </Border>
+
+        <!-- Filtros de Búsqueda -->
+        <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="20" Margin="0,0,0,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                    <TextBlock Text="🔍 Buscar por Nombre de Contacto" FontWeight="Bold" Margin="0,0,0,5" Foreground="#7F8C8D"/>
+                    <TextBox Text="{Binding FiltroNombre, UpdateSourceTrigger=PropertyChanged}" 
+                             Padding="10" FontSize="14" BorderBrush="#BDC3C7" BorderThickness="1"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                    <TextBlock Text="️ Buscar por Ciudad" FontWeight="Bold" Margin="0,0,0,5" Foreground="#7F8C8D"/>
+                    <TextBox Text="{Binding FiltroCiudad, UpdateSourceTrigger=PropertyChanged}" 
+                             Padding="10" FontSize="14" BorderBrush="#BDC3C7" BorderThickness="1"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Tabla -->
+        <Border Grid.Row="2" Background="White" CornerRadius="10" Padding="10">
+            <DataGrid ItemsSource="{Binding Proveedores}" SelectedItem="{Binding ProveedorSeleccionado}"
+                      AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False"
+                      RowHeight="40" GridLinesVisibility="Horizontal" BorderThickness="0">
+                <DataGrid.ColumnHeaderStyle>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#ECF0F1"/>
+                        <Setter Property="Foreground" Value="#2C3E50"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
+                        <Setter Property="Padding" Value="10"/>
+                    </Style>
+                </DataGrid.ColumnHeaderStyle>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding ProveedorID}" Width="60"/>
+                    <DataGridTextColumn Header="Compañía" Binding="{Binding CompaniaNombre}" Width="200"/>
+                    <DataGridTextColumn Header="Contacto" Binding="{Binding NombreContacto}" Width="150"/>
+                    <DataGridTextColumn Header="Ciudad" Binding="{Binding Ciudad}" Width="120"/>
+                    <DataGridTextColumn Header="Teléfono" Binding="{Binding Telefono}" Width="120"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>
