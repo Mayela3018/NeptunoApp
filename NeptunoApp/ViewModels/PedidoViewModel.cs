@@ -3,6 +3,7 @@ using NeptunoApp.Data;
 using System.Collections.ObjectModel;
 using System.Data.SqlClient;
 using System.Windows;
+using System.Windows.Input; // ← Agregado para CommandManager
 
 namespace NeptunoApp.ViewModels
 {
@@ -79,19 +80,19 @@ namespace NeptunoApp.ViewModels
                     FechaRequerida = row["FechaRequerida"] as DateTime?,
                     FechaEnvio = row["FechaEnvio"] as DateTime?,
                     TransportistaID = row["TransportistaID"] as int?,
-                    Destinatario = row["Destinatario"].ToString(),
-                    CiudadDestino = row["CiudadDestino"].ToString(),
-                    PaisDestino = row["PaisDestino"].ToString(),
-                    Empresa = row["Empresa"].ToString(),
-                    EmpleadoNombre = row["EmpleadoNombre"].ToString(),
-                    Transportista = row["Transportista"].ToString()
+                    Destinatario = row["Destinatario"]?.ToString(),
+                    CiudadDestino = row["CiudadDestino"]?.ToString(),
+                    PaisDestino = row["PaisDestino"]?.ToString(),
+                    Empresa = row["Empresa"]?.ToString(),
+                    EmpleadoNombre = row["EmpleadoNombre"]?.ToString(),
+                    Transportista = row["Transportista"]?.ToString()
                 });
             }
         }
 
         private void CargarCombos()
         {
-            // Cargar Clientes (Usando ExecuteSqlQuery para consultas directas)
+            // Cargar Clientes
             Clientes.Clear();
             var dtClientes = DatabaseHelper.ExecuteSqlQuery("SELECT * FROM Clientes ORDER BY Empresa");
             foreach (System.Data.DataRow row in dtClientes.Rows)
@@ -103,7 +104,7 @@ namespace NeptunoApp.ViewModels
                 });
             }
 
-            // Cargar Empleados (Usando ExecuteSqlQuery para consultas directas)
+            // Cargar Empleados
             Empleados.Clear();
             var dtEmpleados = DatabaseHelper.ExecuteSqlQuery("SELECT EmpleadoID, Nombre + ' ' + Apellidos AS NombreCompleto FROM Empleados ORDER BY Nombre");
             foreach (System.Data.DataRow row in dtEmpleados.Rows)
@@ -115,7 +116,7 @@ namespace NeptunoApp.ViewModels
                 });
             }
 
-            // Cargar Transportistas (Usando ExecuteSqlQuery para consultas directas)
+            // Cargar Transportistas
             Transportistas.Clear();
             var dtTransportistas = DatabaseHelper.ExecuteSqlQuery("SELECT * FROM Transportistas ORDER BY CompaniaNombre");
             foreach (System.Data.DataRow row in dtTransportistas.Rows)
@@ -134,7 +135,7 @@ namespace NeptunoApp.ViewModels
             {
                 if (PedidoSeleccionado == null)
                 {
-                    MessageBox.Show("No hay un pedido seleccionado", "Advertencia",
+                    MessageBox.Show("Por favor, haz clic en 'Nuevo' o selecciona un pedido de la tabla.", "Advertencia",
                         MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
@@ -171,9 +172,9 @@ namespace NeptunoApp.ViewModels
 
         private void EliminarPedido(object? parameter)
         {
-            if (PedidoSeleccionado == null)
+            if (PedidoSeleccionado == null || PedidoSeleccionado.PedidoID == 0)
             {
-                MessageBox.Show("Seleccione un pedido para eliminar", "Advertencia",
+                MessageBox.Show("Seleccione un pedido de la tabla para eliminar.", "Advertencia",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -210,8 +211,20 @@ namespace NeptunoApp.ViewModels
             PedidoSeleccionado = new Pedido
             {
                 PedidoID = 0,
-                FechaPedido = DateTime.Now
+                ClienteID = null,
+                EmpleadoID = null,
+                TransportistaID = null,
+                FechaPedido = DateTime.Now,
+                FechaRequerida = null,
+                FechaEnvio = null,
+                Destinatario = string.Empty,
+                CiudadDestino = string.Empty,
+                PaisDestino = string.Empty
             };
+
+            // Forzar actualización de la interfaz y los comandos
+            OnPropertyChanged(nameof(PedidoSeleccionado));
+            CommandManager.InvalidateRequerySuggested();
         }
 
         private void GenerarReporte(object? parameter)

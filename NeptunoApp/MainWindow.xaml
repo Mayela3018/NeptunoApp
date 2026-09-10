@@ -3,40 +3,85 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="NeptunoDB - Admin Panel" Height="700" Width="1200"
         WindowStartupLocation="CenterScreen"
-        Background="#F4F6F9">
+        Background="#F5F0FA">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Barra Lateral (Sidebar) -->
-        <Border Grid.Column="0" Background="#2C3E50">
+        <Border Grid.Column="0" Background="#D1C4E9">
             <StackPanel Margin="0,30,0,0">
                 <TextBlock Text="NEPTUNO DB" FontSize="22" FontWeight="Bold" 
-                           Foreground="#3498DB" HorizontalAlignment="Center" Margin="0,0,0,40"/>
+                           Foreground="#5E35B1" HorizontalAlignment="Center" Margin="0,0,0,40"/>
 
                 <Button Content="📦 Productos" Click="BtnProductos_Click" 
-                        Background="Transparent" Foreground="White" BorderThickness="0" 
-                        FontSize="16" Padding="20,15" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                        FontSize="16" Padding="20,15" HorizontalContentAlignment="Left" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="#D81B60"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#E1BEE7"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
 
-                <Button Content="️ Categorías" Click="BtnCategorias_Click" 
-                        Background="Transparent" Foreground="White" BorderThickness="0" 
-                        FontSize="16" Padding="20,15" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                <Button Content="🗂️ Categorías" Click="BtnCategorias_Click" 
+                        FontSize="16" Padding="20,15" HorizontalContentAlignment="Left" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="#D81B60"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#E1BEE7"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
 
                 <Button Content="🚚 Proveedores" Click="BtnProveedores_Click" 
-                        Background="Transparent" Foreground="White" BorderThickness="0" 
-                        FontSize="16" Padding="20,15" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                        FontSize="16" Padding="20,15" HorizontalContentAlignment="Left" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="#D81B60"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#E1BEE7"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
 
                 <Button Content="📋 Pedidos y Reportes" Click="BtnPedidos_Click" 
-                        Background="Transparent" Foreground="White" BorderThickness="0" 
-                        FontSize="16" Padding="20,15" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                        FontSize="16" Padding="20,15" HorizontalContentAlignment="Left" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="#D81B60"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#E1BEE7"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </StackPanel>
         </Border>
 
-        <!-- Área de Contenido -->
-        <Border Grid.Column="1" Background="#F4F6F9">
-            <!-- Aquí se cargarán las vistas -->
+        <Border Grid.Column="1" Background="#B8A9C9">
             <ContentControl x:Name="MainContent" Margin="0"/>
         </Border>
     </Grid>

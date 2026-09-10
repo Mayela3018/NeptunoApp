@@ -63,11 +63,14 @@ namespace NeptunoApp.ViewModels
                     NombreProducto = row["NombreProducto"].ToString(),
                     ProveedorID = row["ProveedorID"] as int?,
                     CategoriaID = row["CategoriaID"] as int?,
-                    CantidadPorUnidad = row["CantidadPorUnidad"].ToString(),
+                    CantidadPorUnidad = row["CantidadPorUnidad"]?.ToString() ?? string.Empty,
                     PrecioUnidad = (decimal)row["PrecioUnidad"],
                     UnidadesEnExistencia = (short)row["UnidadesEnExistencia"],
-                    NombreCategoria = row["NombreCategoria"].ToString(),
-                    CompaniaNombre = row["CompaniaNombre"].ToString()
+                    UnidadesEnPedido = (short)row["UnidadesEnPedido"],
+                    NivelDeReorden = (short)row["NivelDeReorden"],
+                    Descontinuado = (bool)row["Descontinuado"],
+                    NombreCategoria = row["NombreCategoria"]?.ToString() ?? string.Empty,
+                    CompaniaNombre = row["CompaniaNombre"]?.ToString() ?? string.Empty
                 });
             }
         }
@@ -79,29 +82,80 @@ namespace NeptunoApp.ViewModels
                 new SqlParameter[] { new SqlParameter("@Opcion", "R") });
 
             foreach (System.Data.DataRow row in dtCat.Rows)
+            {
                 Categorias.Add(new Categoria
                 {
                     CategoriaID = (int)row["CategoriaID"],
                     NombreCategoria = row["NombreCategoria"].ToString()
                 });
+            }
 
             Proveedores.Clear();
             var dtProv = DatabaseHelper.ExecuteQuery("SP_Proveedores_Crud",
                 new SqlParameter[] { new SqlParameter("@Opcion", "R") });
 
             foreach (System.Data.DataRow row in dtProv.Rows)
+            {
                 Proveedores.Add(new Proveedor
                 {
                     ProveedorID = (int)row["ProveedorID"],
                     CompaniaNombre = row["CompaniaNombre"].ToString()
                 });
+            }
         }
 
         private void GuardarProducto(object? parameter)
         {
             try
             {
-                if (ProductoSeleccionado == null) return;
+                if (ProductoSeleccionado == null)
+                {
+                    MessageBox.Show("No hay un producto seleccionado", "Advertencia",
+                        MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(ProductoSeleccionado.NombreProducto))
+                {
+                    MessageBox.Show("El nombre del producto es obligatorio", "Error de validación",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (ProductoSeleccionado.PrecioUnidad <= 0)
+                {
+                    MessageBox.Show("El precio debe ser mayor a 0. Verifique el campo 'Precio Unidad'",
+                        "Error de validación", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (ProductoSeleccionado.UnidadesEnExistencia <= 0)
+                {
+                    MessageBox.Show("El stock es obligatorio y debe ser mayor a 0",
+                        "Error de validación", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (ProductoSeleccionado.NivelDeReorden < 0)
+                {
+                    MessageBox.Show("El nivel de reorden no puede ser negativo",
+                        "Error de validación", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (ProductoSeleccionado.CategoriaID == null || ProductoSeleccionado.CategoriaID == 0)
+                {
+                    MessageBox.Show("Debe seleccionar una categoría de la lista",
+                        "Error de validación", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (ProductoSeleccionado.ProveedorID == null || ProductoSeleccionado.ProveedorID == 0)
+                {
+                    MessageBox.Show("Debe seleccionar un proveedor de la lista",
+                        "Error de validación", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
                 string opcion = ProductoSeleccionado.ProductoID == 0 ? "C" : "U";
 
@@ -112,7 +166,7 @@ namespace NeptunoApp.ViewModels
                     new SqlParameter("@NombreProducto", ProductoSeleccionado.NombreProducto),
                     new SqlParameter("@ProveedorID", ProductoSeleccionado.ProveedorID ?? (object)DBNull.Value),
                     new SqlParameter("@CategoriaID", ProductoSeleccionado.CategoriaID ?? (object)DBNull.Value),
-                    new SqlParameter("@CantidadPorUnidad", ProductoSeleccionado.CantidadPorUnidad ?? (object)DBNull.Value),
+                    new SqlParameter("@CantidadPorUnidad", string.IsNullOrWhiteSpace(ProductoSeleccionado.CantidadPorUnidad) ? (object)DBNull.Value : ProductoSeleccionado.CantidadPorUnidad),
                     new SqlParameter("@PrecioUnidad", ProductoSeleccionado.PrecioUnidad),
                     new SqlParameter("@UnidadesEnExistencia", ProductoSeleccionado.UnidadesEnExistencia),
                     new SqlParameter("@UnidadesEnPedido", ProductoSeleccionado.UnidadesEnPedido),
@@ -120,30 +174,30 @@ namespace NeptunoApp.ViewModels
                     new SqlParameter("@Descontinuado", ProductoSeleccionado.Descontinuado)
                 });
 
-                MessageBox.Show("Producto guardado correctamente", "Éxito",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                string mensaje = opcion == "C" ? "Producto creado correctamente" : "Producto actualizado correctamente";
+                MessageBox.Show(mensaje, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 CargarProductos();
                 LimpiarFormulario(null);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}", "Error",
+                MessageBox.Show($"Error al guardar: {ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void EliminarProducto(object? parameter)
         {
-            if (ProductoSeleccionado == null)
+            if (ProductoSeleccionado == null || ProductoSeleccionado.ProductoID == 0)
             {
-                MessageBox.Show("Seleccione un producto para eliminar", "Advertencia",
+                MessageBox.Show("Seleccione un producto de la tabla para eliminar", "Advertencia",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            var result = MessageBox.Show($"¿Eliminar el producto '{ProductoSeleccionado.NombreProducto}'?",
-                "Confirmar", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            var result = MessageBox.Show($"¿Está seguro de eliminar el producto '{ProductoSeleccionado.NombreProducto}'?",
+                "Confirmar eliminación", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
@@ -171,7 +225,19 @@ namespace NeptunoApp.ViewModels
 
         private void LimpiarFormulario(object? parameter)
         {
-            ProductoSeleccionado = new Producto();
+            ProductoSeleccionado = new Producto
+            {
+                ProductoID = 0,
+                NombreProducto = string.Empty,
+                CantidadPorUnidad = string.Empty,
+                PrecioUnidad = 0,
+                UnidadesEnExistencia = 0,
+                UnidadesEnPedido = 0,
+                NivelDeReorden = 0,
+                Descontinuado = false,
+                CategoriaID = null,
+                ProveedorID = null
+            };
             TituloFormulario = "Nuevo Producto";
         }
 
