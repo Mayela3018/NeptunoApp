@@ -13,7 +13,8 @@
         public string CiudadDestino { get; set; } = string.Empty;
         public string PaisDestino { get; set; } = string.Empty;
 
-        // Propiedades de navegación
+        public bool Activo { get; set; } = true;
+
         public string Empresa { get; set; } = string.Empty;
         public string EmpleadoNombre { get; set; } = string.Empty;
         public string Transportista { get; set; } = string.Empty;

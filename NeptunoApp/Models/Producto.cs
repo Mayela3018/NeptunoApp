@@ -28,7 +28,9 @@ namespace NeptunoApp.Models
 
         public bool Descontinuado { get; set; }
 
-        // Propiedades de navegación
+        
+        public bool Activo { get; set; } = true;
+
         public string NombreCategoria { get; set; } = string.Empty;
         public string CompaniaNombre { get; set; } = string.Empty;
     }

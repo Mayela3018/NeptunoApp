@@ -12,5 +12,7 @@
         public string Pais { get; set; } = string.Empty;
         public string Telefono { get; set; } = string.Empty;
         public string Fax { get; set; } = string.Empty;
+
+        public bool Activo { get; set; } = true;
     }
 }
